@@ -1,5 +1,5 @@
+from bleak import BleakClient
 import flask
-import winsound
 import playsound
 import pygame.midi as midi
 import time
@@ -7,54 +7,41 @@ import threading
 
 app = flask.Flask(__name__)
 
-shift = 0
-base_shift = 20
-base_increment = 1
-base_duration = 1
-
 midi.init()
 player = midi.Output(0)
 player.set_instrument(25)
 
-
-def play_tone(shift_level):
-    player.note_on(base_shift + (base_increment*shift_level) + shift, 127)
-    time.sleep(base_duration)
-    player.note_off(base_shift + (base_increment*shift_level) + shift, 127)
-
-def play_tone_thread(shift_level):
-    threading.Thread(target=play_tone, args=(shift_level,)).start()
-
-@app.route("/keyboard/tone_shift/<shift>")
-def keyboard_tone_shift(new_shift):
-    global shift
-    shift = new_shift
-
-@app.route("/simon/red")
-def simon_red():
-    play_tone(0)
-    return "success"
-
-@app.route("/simon/green")
-def simon_green():
-    play_tone(1)
-    return "success"
-
-@app.route("/simon/blue")
-def simon_blue():
-    play_tone(2)
-    return "success"
-
-@app.route("/simon/yellow")
-def simon_yellow():
-    play_tone(3)
-    return "success"
-
+notes_playing = {}
 
 @app.route("/drums/<drum>")
 def drums_bass(drum):
     playsound.playsound(drum + ".mp3", False)
     return "success"
+
+def kbd_bt_callback(sender: str, data: bytearray):
+    for instruction in data.split(0):
+        if len(instruction) < 2:
+            continue
+        if instruction.startswith(1): # start playing a tone
+            notes_playing[instruction[1]] = 0 if len(instruction) == 2 else int.from_bytes(instruction[2:], byteorder="big", signed=False)
+            player.note_on(notes_playing[instruction[1]])
+        else: # ends playing a note
+            player.note_off(notes_playing[instruction[1]])
+            del notes_playing[instruction[1]]
+
+def kbd_bt_main(address):
+    with BleakClient(address) as client:
+        if not client.is_connected():
+            while not client.connect():
+                time.sleep(250)
+        client.start_notify(address, kbd_bt_callback)
+
+kbd_address = "XX:XX:XX:XX:XX:XX"
+
+threading.Thread(
+    target=kbd_bt_main,
+    args=(kbd_address,)
+)
 
 app.run("0.0.0.0", 5000)
 
