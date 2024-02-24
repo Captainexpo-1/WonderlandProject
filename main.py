@@ -9,6 +9,3 @@ def drums_bass(drum):
     return "success"
 
 app.run("0.0.0.0", 5000)
-
-del player
-midi.quit()
