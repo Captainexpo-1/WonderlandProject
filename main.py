@@ -1,9 +1,6 @@
 from bleak import BleakClient
 import flask
 import playsound
-import pygame.midi as midi
-import time
-import threading
 
 app = flask.Flask(__name__)
 
