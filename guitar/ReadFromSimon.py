@@ -28,10 +28,10 @@ def parse_pitch(inp):
         if len(s) == 1:
             #print(s)
             cur[s] = pitches.get(s)*g_fret()
-            send_midi_note_on(PitchToFLNote(cur[s]), 127)
+            send_midi_note_on(PitchToFLNote(cur[s]), 127, channel=4)
         else:
             #print(s)
-            send_midi_note_off(PitchToFLNote(cur[s[0]]))
+            send_midi_note_off(PitchToFLNote(cur[s[0]]), channel=4)
     
 
 
@@ -48,7 +48,7 @@ def read_from_port(port):
         # Decode data (assuming it's in UTF-8, adjust if necessary)
         decoded_data = data.decode('utf-8').rstrip()
         #print(decoded_data)
-        #print("Received:", decoded_data)
+        #print("Received:", decoded_daddddffffssssssssssddddta)
         if len(decoded_data) != 7:
             continue
         if last_fret != g_fret():
@@ -64,7 +64,7 @@ def read_from_port(port):
 
 def main():
     try:
-        # Configure serial port settings
+        # Configure serial port settingsasdfg
         # '/dev/tty.usbserial-110' is the port name
         # 9600 is the baud rate, adjust if your device uses a different rate
         ser = serial.Serial('/dev/tty.usbserial-110', 9600, timeout=1)

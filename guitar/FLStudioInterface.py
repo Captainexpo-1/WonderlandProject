@@ -18,16 +18,16 @@ def PitchToFLNote(pitch: float):
 # Function to send a MIDI note
 def send_midi_note_on(note, velocity, port=p, channel=-1):
     if channel != -1:
-        on = mido.Message('note_on', note=note, velocity=velocity, channel=channel)
+        on = mido.Message('note_on', note=int(note), velocity=int(velocity), channel=channel)
     else:
-        on = mido.Message('note_on', note=note, velocity=velocity)
+        on = mido.Message('note_on', note=int(note), velocity=int(velocity))
     port.send(on)
 
 def send_midi_note_off(note,port=p,velocity=127,channel=-1):
     if channel != -1:
-        off = mido.Message('note_off', note=note, velocity=velocity, channel=channel)
+        off = mido.Message('note_off', note=int(note), velocity=int(velocity), channel=int(channel))
     else:
-        off = mido.Message('note_off', note=note, velocity=velocity)
+        off = mido.Message('note_off', note=int(note), velocity=int(velocity))
     port.send(off)
 
 
