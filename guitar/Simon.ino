@@ -11,5 +11,8 @@ void loop(){
     int b = digitalRead(4) ^ 1;
     int c = digitalRead(5) ^ 1;
     int d = digitalRead(6) ^ 1;
-    Serial.println(String(a) + " " + String(b) + " " + String(c) + " " + String(d));
+    Serial.
+    
+
+    ln(String(a) + " " + String(b) + " " + String(c) + " " + String(d));
 }

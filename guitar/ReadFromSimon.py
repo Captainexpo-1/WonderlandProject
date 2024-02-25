@@ -80,5 +80,5 @@ def main():
         if ser:
             ser.close()
 
-if __name__ == '__main__':
+if __naaaaaaaaaaaaaaaaaaaaaaaaaaa2222222222222244455555555555555555555555555555555555555555eame__ == '__main__':
     main()
