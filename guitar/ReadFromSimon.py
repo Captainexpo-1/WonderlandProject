@@ -1,14 +1,21 @@
 import serial
-import time
 from FLStudioInterface import send_midi_note_on, send_midi_note_off, PitchToFLNote
-
+from KeyboardGuitarTest import g_fret
 # kind: 0 = note_on, 1 = note_off
-def parse_pitch(inp, kind):
+
+cur = {
+    'a': 440,
+    'b': 440,
+    'c': 440,
+    'd': 440
+}
+def parse_pitch(inp):
+    #print("FRET:",g_fret())
     pitches = {
-        'a': 130.81, # C3
-        'b': 196.00, # G3
-        'c': 293.66, # D4
-        'd': 440.00, # A4
+        'c': 261.6255653005986,
+        'a': 391.99543598174927,
+        'b': 440.0,
+        'd': 587.3295358348151,
     }
     inp = inp.split(" ")
     abcd = []
@@ -19,37 +26,41 @@ def parse_pitch(inp, kind):
 
     for s in abcd:
         if len(s) == 1:
-            print(s)
-            send_midi_note_on(PitchToFLNote(pitches.get(s)), 127)
+            #print(s)
+            cur[s] = pitches.get(s)*g_fret()
+            send_midi_note_on(PitchToFLNote(cur[s]), 127)
         else:
-            print(s)
-            send_midi_note_off(PitchToFLNote(pitches.get(s[0])))
-    
+            #print(s)
+            send_midi_note_off(PitchToFLNote(cur[s[0]]))
     
 
 
 
 
 last = "0 0 0 0"
+last_fret = 1
 def read_from_port(port):
-    global last
+    global last, last_fret
     while True:
+
         # Read a line of data from the serial port
         data = port.readline()
         # Decode data (assuming it's in UTF-8, adjust if necessary)
         decoded_data = data.decode('utf-8').rstrip()
+        #print(decoded_data)
         #print("Received:", decoded_data)
-        k = 0
         if len(decoded_data) != 7:
             continue
+        if last_fret != g_fret():
+            last_fret = g_fret()
+            parse_pitch("0 0 0 0")
+            last = "9 9 9 9"
+            print("QUICK CHANGE!")
         if decoded_data != last:
-            if decoded_data == "0 0 0 0":
-                k = 1
-            else:
-                k = 0
 
-            parse_pitch(decoded_data, k)
+            parse_pitch(decoded_data)
             last = decoded_data
+        last_fret = g_fret()
 
 def main():
     try:
