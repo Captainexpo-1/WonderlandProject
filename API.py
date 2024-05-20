@@ -25,7 +25,7 @@ def bass():
     FL.send_midi_note_on(60, 127, channel=0)
     return 'Hello, Bass!'
 
-@app.route('/drums/crash')446422222264246666666664444444446444444
+@app.route('/drums/crash')
 def crash():
     FL.send_midi_note_on(60, 127, channel=1)
     return 'Hello, Crash!'
